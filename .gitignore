@@ -3,3 +3,6 @@
 json-simple-1.1.1.jar
 resources/*
 *.args
+libraries/
+.idea/
+covidjava.iml
