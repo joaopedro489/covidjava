@@ -17,5 +17,5 @@ public class Medicao implements Serializable, Model {
         return this.pais.nome + " " + this.pais.slug + " " + this.momento
             + " " + this.casos + " " + this.status;
     }
-    
+
 }

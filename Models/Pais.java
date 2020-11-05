@@ -11,5 +11,5 @@ public class Pais  implements Serializable, Model {
     public static String toString(){
         return this.nome + " " + this.slug + " " + this.codigo;
     }
-    
+
 }
