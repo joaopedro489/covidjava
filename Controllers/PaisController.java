@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
 import java.net.http.HttpClient.*;
+import java.time.LocalDateTime;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
 public class PaisController {
-    public static void getPaises(){
+    public static void getPaisesApi(){
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
                                .followRedirects(Redirect.ALWAYS)
@@ -25,16 +26,17 @@ public class PaisController {
 
            try {
                JSONArray respostaJson = (JSONArray) new JSONParser().parse(resposta.body());
-               ArrayList<Pais> paises = new ArrayList<Pais>();
+               ArrayList paises = new ArrayList();
+               ArrayList medicoes = new ArrayList();
                for (Object pais : respostaJson) {
                    String country = (String) ((JSONObject) pais).get("Country");
                    String slug = (String) ((JSONObject) pais).get("Slug");
                    String iso2 = (String) ((JSONObject) pais).get("ISO2");
-                   ArrayList<HashMap<String, String>> pais = getPaisCasos(slug)
+                   ArrayList<HashMap<String, String>> dados = getPaisLatLonApi(slug);
 
 
-                   Pais pais = new
-                   Medicao medicao = new
+                   Pais paisArquivo = new Pais(country, iso2, slug,
+                        Float.parseFloat(dados.get(0).get("latitude")), Float.parseFloat(dados.get(0).get("longitude")));
                    paises.add(paisArquivo);
                }
                FileController.escreverArquivo("countries", paises);
@@ -53,32 +55,34 @@ public class PaisController {
            e.printStackTrace();
        }
     }
-    public static ArrayList<HashMap<String, String>> getPaisCasos(String slug){
+    public static ArrayList<HashMap<String, String>> getPaisLatLonApi(String slug){
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
                                .followRedirects(Redirect.ALWAYS)
                                .build();
 
         HttpRequest requisicao = HttpRequest.newBuilder()
-                                .uri(URI.create("https://api.covid19api.com/total/dayone/country/" + slug))
+                                .uri(URI.create("https://api.covid19api.com/live/country/" + slug))
                                 .build();
         try{
+            System.out.println("++++++++++++++++");
+            System.out.println(slug);
+            System.out.println("----------------");
             HttpResponse<String> resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
 
             try{
                 JSONArray respostaJson = (JSONArray) new JSONParser().parse(resposta.body());
                 ArrayList<HashMap<String, String>> pais = new ArrayList<HashMap<String, String>>();
-                for (Object dados : respostaJson) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("latitude", (String) ((JSONObject) dados).get("Lat"));
-                    map.put("longitude", (String) ((JSONObject) dados).get("Lon"));
-                    map.put("confirmados", (String) ((JSONObject) dados).get("Confirmed"));
-                    map.put("mortos", (String) ((JSONObject) dados).get("Deaths"));
-                    map.put("recuperados", (String) ((JSONObject) dados).get("Recovered"));
-                    map.put("data", (String) ((JSONObject) dados).get("Date"));
-
-                    pais.add(map);
+                HashMap<String, String> map = new HashMap<String, String>();
+                String latitude = "0";
+                String longitude = "0";
+                if(respostaJson.size() != 0){
+                    latitude = (String) ((JSONObject) respostaJson.get(0)).get("Lat");
+                    longitude = (String) ((JSONObject) respostaJson.get(0)).get("Lon");
                 }
+                map.put("latitude", latitude);
+                map.put("longitude", longitude);
+                pais.add(map);
                 return pais;
             }
             catch (ParseException e) {
@@ -101,8 +105,6 @@ public class PaisController {
         }
 
     }
-    public static void updatePaises(){
-
+    public static void main(String[] args) {
     }
-
 }

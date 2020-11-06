@@ -6,12 +6,16 @@ import java.nio.file.*;
 import java.lang.*;
 
 public class FileController {
-    public static void escreverArquivo(String nomeArquivo, ArrayList<Model> objects){
-        OutputStream file = new FileOutputStream("resources/"+ nomeArquivo + ".ser");
+    public static void escreverArquivo(String nomeArquivo, ArrayList objects){
+        OutputStream file = null;
         ObjectOutputStream output = null;
         try {
+            file = new FileOutputStream("resources/"+ nomeArquivo + ".ser");
             output = new ObjectOutputStream(file);
         } catch(FileNotFoundException e) {
+            System.out.println("Erro ao abrir o arquivo!");
+            return;
+        } catch(IOException e){
             System.out.println("Erro ao abrir o arquivo!");
             return;
         }
@@ -24,19 +28,26 @@ public class FileController {
             return;
         }
     }
-    public static ArrayList<Model> lerArquivo(String nomeArquivo){
-        InputStream file = new FileInputStream("resources/" + nomeArquivo + ".ser");
+    public static ArrayList lerArquivo(String nomeArquivo){
+        InputStream file = null;
         ObjectInputStream input = null;
         try{
+            file = new FileInputStream("resources/" + nomeArquivo + ".ser");
             input = new ObjectInputStream(file);
         } catch(FileNotFoundException e){
             System.out.println("Erro ao abrir o arquivo!");
             return null;
+        } catch(IOException e){
+            System.out.println("Erro ao o arquivo!");
+            return null;
         }
         try{
-            return (ArrayList<Model>) input.readObject();
+            return (ArrayList) input.readObject();
         } catch(IOException e){
             System.out.println("Erro ao ler o arquivo");
+            return null;
+        } catch (ClassNotFoundException e){
+            System.out.println("Classe nao encontrada");
             return null;
         }
     }
