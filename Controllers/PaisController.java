@@ -110,6 +110,7 @@ public class PaisController {
         Scanner scanner = new Scanner(System.in);
         String dataInicio = scanner.nextLine();
         String dataFinal = scanner.nextLine();
-        RankingController.rankingGeral(dataInicio, dataFinal, "confirmados");
+        String tipo = scanner.nextLine();
+        RankingController.rankingGeral(dataInicio, dataFinal, tipo);
     }
 }

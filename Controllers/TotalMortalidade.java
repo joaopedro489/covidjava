@@ -6,4 +6,5 @@ public class TotalMortalidade extends Estatistica{
     public TotalMortalidade(String nome, List<Medicao> observacoes){
         super(nome, observacoes);
     }
+
 }

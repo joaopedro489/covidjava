@@ -34,9 +34,9 @@ public abstract class Estatistica{
     public LocalDateTime dataFinal(){
         return this.observacoes.get(1).getMomento();
     }
-    public float valor(){
-        return (float) this.observacoes.get(1).getCasos()
-            /(float) this.observacoes.get(0).getCasos();
+    public float valor(int i){
+        return this.observacoes.get(i+1).getCasos() -
+            this.observacoes.get(i).getCasos();
     }
     public String toString() {
         return this.nome + " " + this.observacoes.toString();

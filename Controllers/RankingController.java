@@ -6,9 +6,33 @@ import java.time.*;
 
 public class RankingController {
     public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo){
-        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
         List<Medicao> casos = new ArrayList<Medicao>();
         Total caso = new Total("total", new ArrayList<Medicao>());
+        RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
+        RankingController.calculaCasos(caso,casos, null);
+        RankingController.ordenaMedicao(casos);
+        return casos;
+    }
+    public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo){
+        List<Medicao> casos = new ArrayList<Medicao>();
+        TotalCrescimento caso = new TotalCrescimento("total crescimento", new ArrayList<Medicao>());
+        RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
+        RankingController.calculaCasos(caso,casos, null);
+        RankingController.ordenaMedicao(casos);
+        return casos;
+    }
+    public static List<Medicao> rankingMortalidade(String dataInicio, String dataFinal){
+        List<Medicao> casos = new ArrayList<Medicao>();
+        TotalMortalidade caso = new TotalMortalidade("total mortalidade", new ArrayList<Medicao>());
+        Total casoTotal = new Total("total", new ArrayList<Medicao>());
+        RankingController.getEstatisticas(caso, dataInicio, dataFinal, "mortos");
+        RankingController.getEstatisticas(casoTotal, dataInicio, dataFinal, "confirmados");
+        RankingController.calculaCasos(caso,casos, casoTotal);
+        RankingController.ordenaMedicao(casos);
+        return casos;
+    }
+    private static Estatistica getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
+        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
         DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -31,27 +55,36 @@ public class RankingController {
                 }
             }
         }
+        return caso;
+    }
+    private static void calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
         for(int i = 0; i < caso.getObservacoes().size() - 1 ; i++){
             if(caso.getObservacoes().get(i).getPais().getSlug().equals(
                 caso.getObservacoes().get(i+1).getPais().getSlug())){
+                    float valor;
+                    if(casoTotal != null){
+                        float valorTotal = casoTotal.valor(i);
+                        float valorMortos = caso.valor(i);
+                        valor = valorMortos/valorTotal;
+                    }
+                    valor = caso.valor(i);
                     Medicao medicao = caso.getObservacoes().get(i);
-                    medicao.setCasos(caso.getObservacoes().get(i+1).getCasos() -
-                        caso.getObservacoes().get(i).getCasos());
+                    medicao.setCasos(valor);
                     casos.add(medicao);
-                    continue;
                 }
-            if(i == 0) continue;
-            if(!(caso.getObservacoes().get(i-1).getPais().getSlug().equals(
+            else if(i != 0 && !(caso.getObservacoes().get(i-1).getPais().getSlug().equals(
                 caso.getObservacoes().get(i).getPais().getSlug()))){
                 casos.add(caso.getObservacoes().get(i));
             }
         }
-        return casos;
     }
-    public static void rankingCrescimento(String dataInicio, String dataFinal){
-
-    }
-    public static void rankingMortalidade(String dataInicio, String dataFinal){
-
+    private static void ordenaMedicao(List<Medicao> lista){
+        Collections.sort(lista, new Comparator<Medicao>(){
+        public int compare(Medicao one, Medicao two) {
+            Float filterOne =  one.getCasos();
+            Float filterTwo =  two.getCasos();
+            return filterTwo.compareTo(filterOne);
+            }
+        });
     }
 }

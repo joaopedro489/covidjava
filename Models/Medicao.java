@@ -10,10 +10,10 @@ public class Medicao extends Model implements Serializable {
     }
     private Pais pais;
     private LocalDateTime momento;
-    private int casos;
+    private float casos;
     private StatusCaso status;
 
-    public Medicao(Pais pais, LocalDateTime momento, int casos, Models.Medicao.StatusCaso status) {
+    public Medicao(Pais pais, LocalDateTime momento, float casos, Models.Medicao.StatusCaso status) {
         this.pais = pais;
         this.momento = momento;
         this.casos = casos;
@@ -36,11 +36,11 @@ public class Medicao extends Model implements Serializable {
         this.momento = momento;
     }
 
-    public int getCasos() {
+    public float getCasos() {
         return casos;
     }
 
-    public void setCasos(int casos) {
+    public void setCasos(float casos) {
         this.casos = casos;
     }
 
