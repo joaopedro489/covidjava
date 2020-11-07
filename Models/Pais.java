@@ -2,7 +2,7 @@ package Models;
 
 import java.io.Serializable;
 
-public class Pais implements Serializable, Model {
+public class Pais extends Model implements Serializable {
     private static final long serialVersionUID = 1002L;
     private String nome;
     private String codigo;
@@ -58,7 +58,7 @@ public class Pais implements Serializable, Model {
         this.longitude = longitude;
     }
 
-    public static String toString(){
+    public String toString(){
         return this.nome + " " + this.slug + " " + this.codigo;
     }
 

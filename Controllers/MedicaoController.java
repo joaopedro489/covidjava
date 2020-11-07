@@ -29,11 +29,10 @@ public class MedicaoController {
                 HttpResponse<String> response = null;
                 while(true){
                     response = cliente.send(request, HttpResponse.BodyHandlers.ofString());
-                    if(response.statusCode() != 429) break;
+                    if(response.statusCode() == 200) break;
                 }
 
                 try{
-
                     JSONArray responseJson = (JSONArray) new JSONParser().parse(response.body());
                     for(Object dados : responseJson){
                         String data = String.valueOf(((JSONObject) dados).get("Date"));

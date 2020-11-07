@@ -1,4 +1,4 @@
 package Models;
-public interface Model {
-    public String toString();
+public abstract class Model {
+    public abstract  String toString();
 }

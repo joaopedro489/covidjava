@@ -55,6 +55,7 @@ public class PaisController {
            e.printStackTrace();
        }
     }
+
     public static ArrayList<HashMap<String, String>> getPaisLatLonApi(String slug){
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
@@ -106,5 +107,9 @@ public class PaisController {
 
     }
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String dataInicio = scanner.nextLine();
+        String dataFinal = scanner.nextLine();
+        RankingController.rankingGeral(dataInicio, dataFinal, "confirmados");
     }
 }

@@ -3,17 +3,17 @@ package Models;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
-public class Medicao implements Serializable, Model {
+public class Medicao extends Model implements Serializable {
     private static final long serialVersionUID = 1001L;
     public enum StatusCaso {
         CONFIRMADOS,RECUPERADOS, MORTOS;
     }
     private Pais pais;
-    private LocalDataTime momento;
+    private LocalDateTime momento;
     private int casos;
     private StatusCaso status;
 
-    public Medicao(Pais pais, LocalDataTime momento, int casos, Models.Medicao.StatusCaso status) {
+    public Medicao(Pais pais, LocalDateTime momento, int casos, Models.Medicao.StatusCaso status) {
         this.pais = pais;
         this.momento = momento;
         this.casos = casos;
@@ -28,11 +28,11 @@ public class Medicao implements Serializable, Model {
         this.pais = pais;
     }
 
-    public LocalDataTime getMomento() {
+    public LocalDateTime getMomento() {
         return momento;
     }
 
-    public void setMomento(LocalDataTime momento) {
+    public void setMomento(LocalDateTime momento) {
         this.momento = momento;
     }
 
@@ -52,8 +52,8 @@ public class Medicao implements Serializable, Model {
         this.status = status;
     }
 
-    public static String toString(){
-        return this.pais.nome + " " + this.pais.slug + " " + this.momento
+    public String toString(){
+        return this.pais.getNome() + " " + this.pais.getSlug() + " " + this.momento
             + " " + this.casos + " " + this.status;
     }
 
