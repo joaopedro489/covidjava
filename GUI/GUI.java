@@ -15,7 +15,9 @@ import java.util.ArrayList;
 
 import Models.Medicao;
 import Models.Pais;
-import java.time.LocalDateTime;
+import Controllers.RankingController;
+import Controllers.PaisController;
+import Controllers.MedicaoController;
 
 public class GUI extends JFrame {
 	private JPanel buttonBar, dateBar, radioBar;
@@ -204,7 +206,7 @@ public class GUI extends JFrame {
 	private void configListeners() {
 		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("lol");
+				updateData();
 			}
 		});
 
@@ -222,7 +224,7 @@ public class GUI extends JFrame {
 
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("lol");
+				search();
 			}
 		});
 
@@ -236,17 +238,49 @@ public class GUI extends JFrame {
 		});
 	}
 
+	private void updateData() {
+		System.out.println("atualizando");
+		PaisController.getPaisesApi();
+		System.out.println("fim paises");
+		MedicaoController.getDadosApi();
+		System.out.println("atualizado");
+	}
+
+	private void search() {
+		int tabIndex = tabs.getSelectedIndex();
+		String fromDate = fromDateField.getText();
+		String toDate = toDateField.getText();
+
+		if (fromDate.isEmpty() || toDate.isEmpty()) {
+			return;
+		}
+
+		List<Medicao> confirmados = null;
+		List<Medicao> mortos = null;
+		List<Medicao> recuperados = null;
+		if (tabIndex < 3) {
+			if (absoluteRadio.isSelected()) {
+				confirmados = RankingController.rankingGeral(fromDate, toDate, "confirmados");
+				mortos = RankingController.rankingGeral(fromDate, toDate, "mortos");
+				recuperados = RankingController.rankingGeral(fromDate, toDate, "recuperados");
+			} else {
+				confirmados = RankingController.rankingCrescimento(fromDate, toDate, "confirmados");
+				mortos = RankingController.rankingCrescimento(fromDate, toDate, "mortos");
+				recuperados = RankingController.rankingCrescimento(fromDate, toDate, "recuperados");
+			}
+		}
+
+		tableModelConfirmados.setMeds(confirmados);
+		tableModelMortos.setMeds(mortos);
+		tableModelRecuperados.setMeds(recuperados);
+	}
+
 	public GUI() {
 		initElements();
 		configElements();
 		configListeners();
 
-		List<Medicao> medicoes = new ArrayList<Medicao>();
-		Pais p = new Pais("lollandia", "yay", "", 0, 0);
-		medicoes.add(new Medicao(p, LocalDateTime.now(), 12, Models.Medicao.StatusCaso.CONFIRMADOS));
-		Pais pp = new Pais("hello motto", "yay", "", 0, 0);
-		medicoes.add(new Medicao(pp, LocalDateTime.now(), 12, Models.Medicao.StatusCaso.CONFIRMADOS));
-		tableModelConfirmados.setMeds(medicoes);
+		// tableModelConfirmados.setMeds(medicoes);
 	}
 
 	public static void main(String[] args) {

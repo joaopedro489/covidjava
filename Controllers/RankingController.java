@@ -41,7 +41,7 @@ public class RankingController {
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
-        DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         for (Medicao dado : dados) {
                 if(dado.getMomento().equals(LocalDateTime.parse(dataInicio, formatadorDeData)) ||
                     dado.getMomento().equals(LocalDateTime.parse(dataFinal, formatadorDeData))){
