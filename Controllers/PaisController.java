@@ -42,7 +42,7 @@ public class PaisController {
                         Float.parseFloat(dados.get(0).get("latitude")), Float.parseFloat(dados.get(0).get("longitude")));
                    paises.add(paisArquivo);
                }
-               FileController.escreverArquivo("countries", paises);
+               FileController.escreverArquivoSer("countries", paises);
            }
            catch (ParseException e) {
                System.err.println("Resposta inválida");
@@ -114,6 +114,7 @@ public class PaisController {
             catch (ParseException e) {
                 System.err.println("Resposta inválida");
                 e.printStackTrace();
+                System.exit(1);
                 return null;
             }
 
@@ -121,12 +122,14 @@ public class PaisController {
         catch (IOException e) {
             System.err.println("Problema com a conexão");
             e.printStackTrace();
+            System.exit(1);
             return null;
 
         }
         catch (InterruptedException e) {
             System.err.println("Requisição interrompida");
             e.printStackTrace();
+            System.exit(1);
             return null;
         }
     }

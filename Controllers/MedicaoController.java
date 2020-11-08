@@ -56,18 +56,21 @@ public class MedicaoController {
              catch (ParseException e) {
                  System.err.println("Resposta inválida");
                  e.printStackTrace();
+                 System.exit(1);
              }
             }
             catch (IOException e) {
                 System.err.println("Problema com a conexão");
                 e.printStackTrace();
+                System.exit(1);
             }
             catch (InterruptedException e) {
                 System.err.println("Requisição interrompida");
                 e.printStackTrace();
+                System.exit(1);
             }
          }
-         FileController.escreverArquivo("samples", medicoes);
+         FileController.escreverArquivoSer("samples", medicoes);
 
     }
 }

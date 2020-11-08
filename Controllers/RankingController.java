@@ -34,8 +34,9 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
-    public static void historicoPesquisa(String dataInicio, String dataFinal, String tipo, Double Raios){
-            return;
+    public static void historicoPesquisa(){
+        
+        return;
     }
     private static Estatistica getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");

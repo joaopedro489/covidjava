@@ -6,7 +6,8 @@ import java.nio.file.*;
 import java.lang.*;
 
 public class FileController {
-    public static void escreverArquivoTsv(String nomeArquivo, List<Medicao> pesquisa){
+    public static void escreverArquivoTsv(String nomeArquivo, List<Medicao> pesquisa, boolean append){
+
         File filePesquisa = new File("resources/" + nomeArquivo + ".tsv");
         FileOutputStream output = null;
 
@@ -28,7 +29,7 @@ public class FileController {
             return;
         }
     }
-    public static void escreverArquivo(String nomeArquivo, List objects){
+    public static void escreverArquivoSer(String nomeArquivo, List objects){
         OutputStream file = null;
         ObjectOutputStream output = null;
         try {
@@ -36,9 +37,11 @@ public class FileController {
             output = new ObjectOutputStream(file);
         } catch(FileNotFoundException e) {
             System.out.println("Erro ao abrir o arquivo!");
+            System.exit(1);
             return;
         } catch(IOException e){
             System.out.println("Erro ao abrir o arquivo!");
+            System.exit(1);
             return;
         }
         try {
@@ -46,6 +49,7 @@ public class FileController {
             output.close();
         } catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo!");
+            System.exit(1);
             return;
         }
     }
@@ -57,18 +61,22 @@ public class FileController {
             input = new ObjectInputStream(file);
         } catch(FileNotFoundException e){
             System.out.println("Erro ao abrir o arquivo!");
+            System.exit(1);
             return null;
         } catch(IOException e){
             System.out.println("Erro ao o arquivo!");
+            System.exit(1);
             return null;
         }
         try{
             return (ArrayList) input.readObject();
         } catch(IOException e){
             System.out.println("Erro ao ler o arquivo");
+            System.exit(1);
             return null;
         } catch (ClassNotFoundException e){
             System.out.println("Classe nao encontrada");
+            System.exit(1);
             return null;
         }
     }
