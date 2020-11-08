@@ -6,7 +6,29 @@ import java.nio.file.*;
 import java.lang.*;
 
 public class FileController {
-    public static void escreverArquivo(String nomeArquivo, ArrayList objects){
+    public static void escreverArquivoTsv(String nomeArquivo, List<Medicao> pesquisa){
+        File filePesquisa = new File("resources/" + nomeArquivo + ".tsv");
+        FileOutputStream output = null;
+
+        try {
+            output = new FileOutputStream(filePesquisa);
+        }
+        catch(FileNotFoundException e) {
+            System.out.println("Erro ao abrir o arquivo!");
+            return;
+        }
+        try {
+            for(int i = 0; i<pesquisa.size(); i++){
+                output.write(pesquisa.get(i).toString().getBytes());
+            }
+            output.close();
+        }
+        catch (IOException e) {
+            System.out.println("Erro ao escrever no arquivo!");
+            return;
+        }
+    }
+    public static void escreverArquivo(String nomeArquivo, List objects){
         OutputStream file = null;
         ObjectOutputStream output = null;
         try {
@@ -21,7 +43,6 @@ public class FileController {
         }
         try {
             output.writeObject(objects);
-
             output.close();
         } catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo!");

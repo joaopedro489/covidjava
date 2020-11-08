@@ -59,7 +59,8 @@ public class Pais extends Model implements Serializable {
     }
 
     public String toString(){
-        return this.nome + " " + this.slug + " " + this.codigo;
+        return this.nome + " " + this.slug + " " + this.codigo + " " + this.latitude
+            + " " + this.longitude;
     }
 
 }
