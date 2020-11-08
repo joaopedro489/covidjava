@@ -24,7 +24,7 @@ public class GUI extends JFrame {
 	private JButton updateButton, storeButton, exportButton, searchButton;
 	private JLabel fromLabel, toLabel, radiusLabel;
 	private JFormattedTextField fromDateField, toDateField, radiusField;
-	private JRadioButton absoluteRadio, growthRadio;
+	private JRadioButton absoluteRadio, growthRadio, mortalidadeRadio, proximosRadio;
 	private JTable tableConfirmados, tableRecuperados, tableMortos, tableMortalidade,
 			tableProximos;
 	private JScrollPane scrollConfirmados, scrollRecuperados, scrollMortos, scrollMortalidade,
@@ -107,6 +107,8 @@ public class GUI extends JFrame {
 		// JRadioButton
 		absoluteRadio = new JRadioButton("Absoluto", true);
 		growthRadio = new JRadioButton("Crescimento");
+		mortalidadeRadio = new JRadioButton("Mortalidade");
+		proximosRadio = new JRadioButton("Próximos");
 
 		// JLabel
 		fromLabel = new JLabel("De: ");
@@ -169,9 +171,13 @@ public class GUI extends JFrame {
 		radioBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 		radioBar.add(absoluteRadio);
 		radioBar.add(growthRadio);
+		radioBar.add(mortalidadeRadio);
+		radioBar.add(proximosRadio);
 		ButtonGroup group = new ButtonGroup();
 		group.add(absoluteRadio);
 		group.add(growthRadio);
+		group.add(mortalidadeRadio);
+		group.add(proximosRadio);
 
 		// tables
 		tableConfirmados.setFocusable(false);
@@ -224,26 +230,67 @@ public class GUI extends JFrame {
 
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (mortalidadeRadio.isSelected() || proximosRadio.isSelected()) {
+					tabs.setEnabledAt(0, false);
+					tabs.setEnabledAt(1, false);
+					tabs.setEnabledAt(2, false);
+
+					if (mortalidadeRadio.isSelected()) {
+						tabs.setSelectedIndex(3);
+						tabs.setEnabledAt(3, true);
+						tabs.setEnabledAt(4, false);
+					}
+
+					if (proximosRadio.isSelected()) {
+						tabs.setSelectedIndex(4);
+						tabs.setEnabledAt(4, true);
+						tabs.setEnabledAt(3, false);
+					}
+				} else {
+					if (tabs.getSelectedIndex() > 2) {
+						tabs.setSelectedIndex(0);
+					}
+					tabs.setEnabledAt(0, true);
+					tabs.setEnabledAt(1, true);
+					tabs.setEnabledAt(2, true);
+					tabs.setEnabledAt(3, false);
+					tabs.setEnabledAt(4, false);
+				}
+
 				search();
 			}
 		});
 
-		tabs.addChangeListener(new ChangeListener() {
+		proximosRadio.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				int index = tabs.getSelectedIndex();
-				radiusField.setEnabled(index == 4);
-				absoluteRadio.setEnabled(index < 3);
-				growthRadio.setEnabled(index < 3);
+				radiusField.setEnabled(proximosRadio.isSelected());
 			}
 		});
 	}
 
+	private void setInitialState() {
+		radiusField.setEnabled(false);
+		tabs.setEnabledAt(3, false);
+		tabs.setEnabledAt(4, false);
+	}
+
 	private void updateData() {
-		System.out.println("atualizando");
-		PaisController.getPaisesApi();
-		System.out.println("fim paises");
-		MedicaoController.getDadosApi();
-		System.out.println("atualizado");
+		String msg = "Isso pode levar alguns minutos. Tem certeza?";
+		int answer = JOptionPane.showConfirmDialog(this, msg, "Atualizar", JOptionPane.YES_NO_OPTION);
+		if (answer == JOptionPane.YES_OPTION) {
+			JOptionPane loading = new JOptionPane();
+			loading.setMessageType(JOptionPane.PLAIN_MESSAGE);
+			loading.setMessage("Aguarde, os dados estão sendo atualizados");
+			loading.setOptionType(JOptionPane.DEFAULT_OPTION);
+			loading.setOptions(new Object[] {});
+			JDialog dialog = loading.createDialog(this, "Atualizando...");
+			dialog.setVisible(true);
+
+			PaisController.getPaisesApi();
+			MedicaoController.getDadosApi();
+
+			dialog.dispose();
+		}
 	}
 
 	private void search() {
@@ -255,10 +302,11 @@ public class GUI extends JFrame {
 			return;
 		}
 
-		List<Medicao> confirmados = null;
-		List<Medicao> mortos = null;
-		List<Medicao> recuperados = null;
-		if (tabIndex < 3) {
+		if (absoluteRadio.isSelected() || growthRadio.isSelected()) {
+			List<Medicao> confirmados;
+			List<Medicao> mortos;
+			List<Medicao> recuperados;
+
 			if (absoluteRadio.isSelected()) {
 				confirmados = RankingController.rankingGeral(fromDate, toDate, "confirmados");
 				mortos = RankingController.rankingGeral(fromDate, toDate, "mortos");
@@ -268,17 +316,23 @@ public class GUI extends JFrame {
 				mortos = RankingController.rankingCrescimento(fromDate, toDate, "mortos");
 				recuperados = RankingController.rankingCrescimento(fromDate, toDate, "recuperados");
 			}
-		}
 
-		tableModelConfirmados.setMeds(confirmados);
-		tableModelMortos.setMeds(mortos);
-		tableModelRecuperados.setMeds(recuperados);
+			tableModelConfirmados.setMeds(confirmados);
+			tableModelMortos.setMeds(mortos);
+			tableModelRecuperados.setMeds(recuperados);
+		} else if (mortalidadeRadio.isSelected()) {
+			List<Medicao> mortalidade = RankingController.rankingMortalidade(fromDate, toDate);
+			tableModelMortalidade.setMeds(mortalidade);
+		} else {
+			// proximos
+		}
 	}
 
 	public GUI() {
 		initElements();
 		configElements();
 		configListeners();
+		setInitialState();
 
 		// tableModelConfirmados.setMeds(medicoes);
 	}
