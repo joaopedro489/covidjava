@@ -53,8 +53,8 @@ public class Medicao extends Model implements Serializable {
     }
 
     public String toString(){
-        return this.pais.getNome() + " " + this.pais.getSlug() + " " + this.momento
-            + " " + this.casos + " " + this.status;
+        return this.pais.getNome() + "\t" + this.pais.getSlug() + "\t" + this.momento
+            + "\t" + this.casos + "\t" + this.status + "\n";
     }
 
 }

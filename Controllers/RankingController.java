@@ -7,15 +7,16 @@ import java.time.*;
 public class RankingController {
     public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo){
         List<Medicao> casos = new ArrayList<Medicao>();
-        Total caso = new Total("total", new ArrayList<Medicao>());
+        Estatistica caso = new Total("total", new ArrayList<Medicao>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
+        FileController.escreverArquivoTsv("teste", casos);
         return casos;
     }
     public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo){
         List<Medicao> casos = new ArrayList<Medicao>();
-        TotalCrescimento caso = new TotalCrescimento("total crescimento", new ArrayList<Medicao>());
+        Estatistica caso = new TotalCrescimento("total crescimento", new ArrayList<Medicao>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
@@ -23,7 +24,7 @@ public class RankingController {
     }
     public static List<Medicao> rankingMortalidade(String dataInicio, String dataFinal){
         List<Medicao> casos = new ArrayList<Medicao>();
-        TotalMortalidade caso = new TotalMortalidade("total mortalidade", new ArrayList<Medicao>());
+        Estatistica caso = new TotalMortalidade("total mortalidade", new ArrayList<Medicao>());
         Total casoTotal = new Total("total", new ArrayList<Medicao>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, "mortos");
         RankingController.getEstatisticas(casoTotal, dataInicio, dataFinal, "confirmados");
@@ -31,6 +32,7 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
+
     private static Estatistica getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
         dataInicio =  dataInicio + " 00:00";
@@ -57,19 +59,21 @@ public class RankingController {
         }
         return caso;
     }
-    private static void calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
+    private static List<Medicao> calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
         for(int i = 0; i < caso.getObservacoes().size() - 1 ; i++){
             if(caso.getObservacoes().get(i).getPais().getSlug().equals(
                 caso.getObservacoes().get(i+1).getPais().getSlug())){
                     float valor;
                     if(casoTotal != null){
-                        float valorTotal = casoTotal.valor(i);
-                        float valorMortos = caso.valor(i);
-                        valor = valorMortos/valorTotal;
+                        float valorTotal = casoTotal.getObservacoes().get(i).getCasos();
+                        float valorMortos = caso.getObservacoes().get(i).getCasos();
+                        valor = (valorMortos/valorTotal) * 100;
                     }
-                    valor = caso.valor(i);
+                    else{
+                        valor = caso.valor(i);
+                    }
                     Medicao medicao = caso.getObservacoes().get(i);
-                    medicao.setCasos(valor);
+                    medicao.setCasos(valor );
                     casos.add(medicao);
                 }
             else if(i != 0 && !(caso.getObservacoes().get(i-1).getPais().getSlug().equals(
@@ -77,6 +81,7 @@ public class RankingController {
                 casos.add(caso.getObservacoes().get(i));
             }
         }
+        return casos;
     }
     private static void ordenaMedicao(List<Medicao> lista){
         Collections.sort(lista, new Comparator<Medicao>(){
