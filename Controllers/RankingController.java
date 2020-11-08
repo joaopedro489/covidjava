@@ -11,7 +11,6 @@ public class RankingController {
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
-        FileController.escreverArquivoTsv("teste", casos);
         return casos;
     }
     public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo){
@@ -32,7 +31,9 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
-
+    public static void historicoPesquisa(String dataInicio, String dataFinal, String tipo, Double Raios){
+            return;
+    }
     private static Estatistica getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
         dataInicio =  dataInicio + " 00:00";
@@ -73,7 +74,7 @@ public class RankingController {
                         valor = caso.valor(i);
                     }
                     Medicao medicao = caso.getObservacoes().get(i);
-                    medicao.setCasos(valor );
+                    medicao.setCasos(valor);
                     casos.add(medicao);
                 }
             else if(i != 0 && !(caso.getObservacoes().get(i-1).getPais().getSlug().equals(

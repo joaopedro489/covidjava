@@ -28,7 +28,7 @@ public class FileController {
             return;
         }
     }
-    public static void escreverArquivo(String nomeArquivo, ArrayList objects){
+    public static void escreverArquivo(String nomeArquivo, List objects){
         OutputStream file = null;
         ObjectOutputStream output = null;
         try {
@@ -43,7 +43,6 @@ public class FileController {
         }
         try {
             output.writeObject(objects);
-
             output.close();
         } catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo!");
