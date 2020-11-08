@@ -152,11 +152,4 @@ public class PaisController {
             Math.sqrt(1-haversine));
         return raioDaTerra * (float) anguloCentral;
     }
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        String dataInicio = scanner.nextLine();
-        String dataFinal = scanner.nextLine();
-        float raio = scanner.nextFloat();
-        PaisController.comparacaoRaio(dataInicio, dataFinal, raio);
-    }
 }

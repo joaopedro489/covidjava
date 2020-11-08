@@ -19,6 +19,9 @@ public class RankingController {
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
+        for(int i = 0; i < casos.size(); i++){
+            System.out.println(casos.get(i));
+        }
         return casos;
     }
     public static List<Medicao> rankingMortalidade(String dataInicio, String dataFinal){
@@ -79,6 +82,22 @@ public class RankingController {
                 }
             else if(i != 0 && !(caso.getObservacoes().get(i-1).getPais().getSlug().equals(
                 caso.getObservacoes().get(i).getPais().getSlug()))){
+                float valor;
+                if(casoTotal != null){
+                    float valorTotal = casoTotal.getObservacoes().get(i).getCasos();
+                    float valorMortos = caso.getObservacoes().get(i).getCasos();
+                    valor = (valorMortos/valorTotal) * 100;
+                }
+                else{
+                    if(caso.getNome().equals("total crescimento")){
+                        valor = caso.getObservacoes().get(i).getCasos() * 100;
+                    }
+                    else{
+                        valor = caso.getObservacoes().get(i).getCasos();
+                    }
+                }
+                Medicao medicao = caso.getObservacoes().get(i);
+                medicao.setCasos(valor);
                 casos.add(caso.getObservacoes().get(i));
             }
         }
