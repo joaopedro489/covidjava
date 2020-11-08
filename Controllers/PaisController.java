@@ -7,7 +7,7 @@ import java.net.*;
 import java.net.http.*;
 import java.net.http.HttpClient.*;
 import java.time.LocalDateTime;
-
+import java.time.format.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
@@ -58,12 +58,15 @@ public class PaisController {
            e.printStackTrace();
        }
     }
-    public static List<HashMap<String,String>> comparacaoRaio(String dataInicio,
+    public static List<Medicao> comparacaoRaio(String dataInicio,
         String dataFinal, float raio){
         ArrayList<HashMap<String, String>> listaDistancia = new ArrayList<HashMap<String, String>>();
-        ArrayList<Medicao> casos = (ArrayList<Medicao>) RankingController.rankingCrescimento(dataInicio,
+		DateTimeFormatter formatadorDeData = DateTimeFormatter.ISO_DATE_TIME;
+		List<Medicao> medicoes = new ArrayList<Medicao>();
+        ArrayList<Medicao> casos = (ArrayList<Medicao>)	RankingController.rankingCrescimento(dataInicio,
             dataFinal, "confirmados");
-        Medicao maior = casos.get(0);
+        Medicao maior = casos.get(1);
+		medicoes.add(maior);
         for (Medicao pais : casos) {
             float distancia = distancia(maior.getPais().getLatitude(),
                 maior.getPais().getLongitude(), pais.getPais().getLatitude(),
@@ -73,13 +76,21 @@ public class PaisController {
                 HashMap<String, String> map = new HashMap<String,String>();
                 map.put("nome", pais.getPais().getNome());
                 map.put("slug", pais.getPais().getSlug());
-                map.put("confirmados", Float.toString(pais.getCasos()));
+				map.put("latitude", Float.toString(pais.getPais().getLatitude()));
+				map.put("longitude", Float.toString(pais.getPais().getLongitude()));
+				map.put("momento", pais.getMomento().format(formatadorDeData));
+                map.put("casos", Float.toString(pais.getCasos()));
                 map.put("distancia", Float.toString(distancia));
                 listaDistancia.add(map);
             }
         }
         PaisController.ordenaDistancia(listaDistancia);
-        return listaDistancia;
+		for (int i = 0; i < listaDistancia.size(); i++ ) {
+			Pais pais = new Pais(listaDistancia.get(i).get("nome"), "teste", listaDistancia.get(i).get("slug"), Float.parseFloat(listaDistancia.get(i).get("latitude")), Float.parseFloat(listaDistancia.get(i).get("longitude")));
+			Medicao medicao = new Medicao(pais,LocalDateTime.parse(listaDistancia.get(i).get("momento"),formatadorDeData),Float.parseFloat(listaDistancia.get(i).get("casos")),Medicao.StatusCaso.CONFIRMADOS);
+			medicoes.add(medicao);
+		}
+        return medicoes;
     }
     private static ArrayList<HashMap<String, String>> getPaisLatLonApi(String slug){
         HttpClient cliente = HttpClient.newBuilder()
@@ -159,6 +170,7 @@ public class PaisController {
 		Scanner scanner = new Scanner(System.in);
 		String dataInicio = scanner.nextLine();
 		String dataFinal = scanner.nextLine();
-		RankingController.rankingCrescimento(dataInicio, dataFinal, "mortos");
+		float raio = scanner.nextFloat();
+		PaisController.comparacaoRaio(dataInicio, dataFinal, raio);
 	}
 }
