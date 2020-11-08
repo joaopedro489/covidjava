@@ -8,6 +8,9 @@ public class TotalCrescimento extends Estatistica {
     }
     @Override
     public float valor(int i){
+		if(this.getObservacoes().get(i).getCasos() == 0){
+			return this.getObservacoes().get(i+1).getCasos() * 100;
+		}
         return ((this.getObservacoes().get(i+1).getCasos() -
                 this.getObservacoes().get(i).getCasos())
             / this.getObservacoes().get(i).getCasos()) * 100;
