@@ -48,6 +48,9 @@ public class RankingController {
 		FileController.escreverArquivoSer(caminhoArquivo, historico);
         return;
     }
+	public static ArrayList<HashMap<String, String>> pegarPesquisa(String caminhoArquivo){
+		return (ArrayList<HashMap<String,String>>)FileController.lerArquivoSer(caminhoArquivo);
+	}
     private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources/samples");
         dataInicio =  dataInicio + " 00:00";
