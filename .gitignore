@@ -6,3 +6,4 @@ resources/*
 libraries/
 .idea/
 covidjava.iml
+out/
