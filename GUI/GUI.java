@@ -437,7 +437,9 @@ public class GUI extends JFrame {
 		JFileChooser chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Serialisáveis", "ser");
 		chooser.setFileFilter(filter);
-		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+
+		int response = newFile ? chooser.showSaveDialog(this) : chooser.showOpenDialog(this);
+		if (response == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
 			if (newFile && file.exists()) {
 				JOptionPane.showMessageDialog(this, "Um arquivo com esse nome já existe");
