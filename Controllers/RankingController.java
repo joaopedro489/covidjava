@@ -35,7 +35,7 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
-    public static void historicoPesquisa(String dataInicio, String dataFinal, String categoria){
+    public static void historicoPesquisa(String dataInicio, String dataFinal, String categoria, float raio){
 		File arquivoHistorico = new File("history/historico.ser");
 		ArrayList<HashMap<String, String>> historico;
 		if(arquivoHistorico.exists()){
@@ -47,6 +47,9 @@ public class RankingController {
 		map.put("dataInicio", dataInicio);
 		map.put("dataFinal", dataFinal);
 		map.put("categoria", categoria);
+		if(raio != null){
+			map.put("raio", Float.toString(raio));
+		}
 		historico.add(map);
 		FileController.escreverArquivoSer("history", "historico", historico);
         return;

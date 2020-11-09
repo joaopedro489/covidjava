@@ -6,7 +6,7 @@ import java.nio.file.*;
 import java.lang.*;
 
 public class FileController {
-    public static void escreverArquivoTsv(String pasta, String nomeArquivo, List pesquisa, boolean append){
+    public static void escreverArquivoTsv(String pasta, String nomeArquivo, List pesquisa){
 
         File filePesquisa = new File(pasta + "/" + nomeArquivo + ".tsv");
         FileOutputStream output = null;
