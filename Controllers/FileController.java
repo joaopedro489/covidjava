@@ -74,7 +74,7 @@ public class FileController {
      * @return se funcionar, retorna um ArrayList com o dados do arquivo.
      * Caso não funcione, retorna null.
      */
-    public static ArrayList lerArquivo(String caminhoArquivo) {
+    public static ArrayList lerArquivoSer(String caminhoArquivo) {
         InputStream file;
         ObjectInputStream input;
         try{
