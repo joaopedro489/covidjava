@@ -3,6 +3,7 @@ import Models.*;
 import java.util.*;
 import java.time.format.*;
 import java.time.*;
+import java.io.*;
 
 public class RankingController {
     public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo){
