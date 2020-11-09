@@ -3,9 +3,10 @@ package GUI;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.DateFormatter;
+import javax.swing.text.NumberFormatter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import javax.swing.text.NumberFormatter;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.awt.*;
@@ -13,6 +14,8 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.io.File;
 
 import Models.Medicao;
 import Models.Pais;
@@ -23,7 +26,7 @@ import Controllers.FileController;
 
 public class GUI extends JFrame {
 	private JPanel buttonBar, dateBar, radioBar;
-	private JButton updateButton, storeButton, exportButton, searchButton;
+	private JButton updateButton, storeButton, restoreButton, exportButton, searchButton;
 	private JLabel fromLabel, toLabel, radiusLabel;
 	private JFormattedTextField fromDateField, toDateField, radiusField;
 	private JRadioButton absoluteRadio, growthRadio, mortalidadeRadio, proximosRadio;
@@ -107,6 +110,7 @@ public class GUI extends JFrame {
 		// JButton
 		updateButton = new JButton("Atualizar");
 		storeButton = new JButton("Salvar consulta");
+		restoreButton = new JButton("Restaurar consulta");
 		exportButton = new JButton("Exportar TSV");
 		searchButton = new JButton("Pesquisar");
 
@@ -161,6 +165,7 @@ public class GUI extends JFrame {
 		buttonBar.setLayout(new FlowLayout(FlowLayout.CENTER));
 		buttonBar.add(updateButton);
 		buttonBar.add(storeButton);
+		buttonBar.add(restoreButton);
 		buttonBar.add(exportButton);
 		buttonBar.add(searchButton);
 
@@ -210,7 +215,7 @@ public class GUI extends JFrame {
 		add(radioBar);
 		add(tabs);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(500, 500);
+		setSize(700, 500);
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setVisible(true);
 	}
@@ -224,35 +229,73 @@ public class GUI extends JFrame {
 
 		storeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("lol");
+				String category;
+				if (absoluteRadio.isSelected()) {
+					category = "absoluto";
+				} else if (growthRadio.isSelected()) {
+					category = "crescimento";
+				} else if (mortalidadeRadio.isSelected()) {
+					category = "mortalidade";
+				} else {
+					category = "próximos";
+				}
+
+				String path = pickFile(true);
+				float radius = radiusField.getText().isEmpty() ? 0 : (float) radiusField.getValue();
+
+				if (path != null && !fromDateField.getText().isEmpty() && !toDateField.getText().isEmpty() &&
+				    (tabs.getSelectedIndex() != 4 || !radiusField.getText().isEmpty())) {
+					RankingController.salvarPesquisa(fromDateField.getText(), toDateField.getText(),
+													 category, radius, path);
+					JOptionPane.showMessageDialog(GUI.this, "Busca salva");
+				} else {
+					JOptionPane.showMessageDialog(GUI.this, "Todos os campos devem estar preenchidos para salvar uma busca");
+				}
+			}
+		});
+
+		restoreButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path = pickFile(false);
+				if (path != null) {
+					List<HashMap<String, String>> list = RankingController.pegarPesquisa(path);
+					HashMap<String, String> search = list.get(0);
+
+					fromDateField.setText(search.get("dataInicio"));
+					toDateField.setText(search.get("dataFinal"));
+
+					String category = search.get("categoria");
+					if (category.equals("próximos")) {
+						radiusField.setText(search.get("raio"));
+						proximosRadio.setSelected(true);
+					} else if (category.equals("absoluto")) {
+						absoluteRadio.setSelected(true);
+					} else if (category.equals("crescimento")) {
+						growthRadio.setSelected(true);
+					} else if (category.equals("mortalidade")) {
+						mortalidadeRadio.setSelected(true);
+					}
+
+					search();
+				}
 			}
 		});
 
 		exportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int index = tabs.getSelectedIndex();
-				DataTableModel model = null;
-				switch (index) {
-					case 0:
-						model = tableModelConfirmados; break;
-					case 1:
-						model = tableModelRecuperados; break;
-					case 2:
-						model = tableModelMortos; break;
-					case 3:
-						model = tableModelMortalidade; break;
-					case 4:
-						model = tableModelProximos; break;
-				}
 
+				DataTableModel model = modelByIndex(tabs.getSelectedIndex());
 				List<Medicao> meds = model.getMeds();
 				if (meds.isEmpty()) {
 					JOptionPane.showMessageDialog(GUI.this, "Você precisa fazer uma pesquisa antes de exportar um TSV");
-						return;
+					return;
 				}
 
-				FileController.escreverArquivoTsv("resources/export", meds);
-				JOptionPane.showMessageDialog(GUI.this, "Dados exportados para resources/export.tsv");
+				String path = pickFile(true);
+				if (path != null) {
+					FileController.escreverArquivoTsv(path, meds);
+					JOptionPane.showMessageDialog(GUI.this, String.format("Dados exportados para %s.tsv", path));
+				}
 			}
 		});
 
@@ -372,6 +415,40 @@ public class GUI extends JFrame {
 			List<Medicao> proximos = PaisController.comparacaoRaio(fromDate, toDate, (float) radiusField.getValue());
 			tableModelProximos.setMeds(proximos);
 		}
+	}
+
+	private DataTableModel modelByIndex(int index) {
+		switch (index) {
+			case 0:
+				return tableModelConfirmados;
+			case 1:
+				return tableModelRecuperados;
+			case 2:
+				return tableModelMortos;
+			case 3:
+				return tableModelMortalidade;
+			case 4:
+				return tableModelProximos;
+		}
+		return null;
+	}
+
+	private String pickFile(boolean newFile) {
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Serialisáveis", "ser");
+		chooser.setFileFilter(filter);
+		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			if (newFile && file.exists()) {
+				JOptionPane.showMessageDialog(this, "Um arquivo com esse nome já existe");
+				return null;
+			} else if (!newFile && !file.exists()) {
+				JOptionPane.showMessageDialog(this, "Esse arquivo não existe");
+				return null;
+			}
+			return file.getPath().substring(0, file.getPath().length() - 4);
+		}
+		return null;
 	}
 
 	public GUI() {

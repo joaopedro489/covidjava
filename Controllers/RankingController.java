@@ -41,7 +41,7 @@ public class RankingController {
 		map.put("dataInicio", dataInicio);
 		map.put("dataFinal", dataFinal);
 		map.put("categoria", categoria);
-		if(categoria.equals("proximos")){
+		if(categoria.equals("próximos")){
 			map.put("raio", Float.toString(raio));
 		}
 		historico.add(map);
