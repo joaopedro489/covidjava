@@ -20,6 +20,7 @@ import Models.Pais;
 import Controllers.RankingController;
 import Controllers.PaisController;
 import Controllers.MedicaoController;
+import Controllers.FileController;
 
 public class GUI extends JFrame {
 	private JPanel buttonBar, dateBar, radioBar;
@@ -40,6 +41,10 @@ public class GUI extends JFrame {
 
 		public DataTableModel() {
 			meds = new ArrayList();
+		}
+
+		public List<Medicao> getMeds() {
+			return meds;
 		}
 
 		public void setMeds(List<Medicao> meds) {
@@ -226,7 +231,29 @@ public class GUI extends JFrame {
 
 		exportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("lol");
+				int index = tabs.getSelectedIndex();
+				DataTableModel model = null;
+				switch (index) {
+					case 0:
+						model = tableModelConfirmados; break;
+					case 1:
+						model = tableModelRecuperados; break;
+					case 2:
+						model = tableModelMortos; break;
+					case 3:
+						model = tableModelMortalidade; break;
+					case 4:
+						model = tableModelProximos; break;
+				}
+
+				List<Medicao> meds = model.getMeds();
+				if (meds.isEmpty()) {
+					JOptionPane.showMessageDialog(GUI.this, "Você precisa fazer uma pesquisa antes de exportar um TSV");
+						return;
+				}
+
+				FileController.escreverArquivoTsv("resources", "export", meds);
+				JOptionPane.showMessageDialog(GUI.this, "Dados exportados para resources/export.tsv");
 			}
 		});
 
@@ -354,8 +381,6 @@ public class GUI extends JFrame {
 		configElements();
 		configListeners();
 		setInitialState();
-
-		// tableModelConfirmados.setMeds(medicoes);
 	}
 
 	public static void main(String[] args) {
