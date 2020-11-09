@@ -33,7 +33,7 @@ public class PaisController {
                    String country = (String) ((JSONObject) pais).get("Country");
                    String slug = (String) ((JSONObject) pais).get("Slug");
                    String iso2 = (String) ((JSONObject) pais).get("ISO2");
-                   System.out.println("indo pegar lat e long do " + country);
+                   System.out.println("indo pegar lat e long do " + slug);
                    ArrayList<HashMap<String, String>> dados = getPaisLatLonApi(slug);
                    System.out.println("voltando " + country);
 
@@ -65,7 +65,7 @@ public class PaisController {
 		List<Medicao> medicoes = new ArrayList<Medicao>();
         ArrayList<Medicao> casos = (ArrayList<Medicao>)	RankingController.rankingCrescimento(dataInicio,
             dataFinal, "confirmados");
-        Medicao maior = casos.get(1);
+        Medicao maior = casos.get(0);
 		medicoes.add(maior);
         for (Medicao pais : casos) {
             float distancia = distancia(maior.getPais().getLatitude(),
@@ -103,10 +103,26 @@ public class PaisController {
                                 .build();
         try{
             HttpResponse<String> resposta;
+			System.out.println("==========================");
             while(true){
                 resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
+				System.out.println(resposta.statusCode());
                 if(resposta.statusCode() == 200) break;
             }
+			if(resposta.body().length() == 3){
+				requisicao = HttpRequest.newBuilder()
+										.uri(URI.create("https://api.covid19api.com/dayone/country/" + slug + "/status/confirmed"))
+										.build();
+
+				while(true){
+					resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
+					System.out.println(resposta.statusCode());
+					System.out.println(resposta.body());
+					if(resposta.statusCode() == 200) break;
+				}
+			}
+			System.out.println("==========================");
+
             try{
                 JSONArray respostaJson = (JSONArray) new JSONParser().parse(resposta.body());
                 ArrayList<HashMap<String, String>> pais = new ArrayList<HashMap<String, String>>();
@@ -114,8 +130,12 @@ public class PaisController {
                 String latitude = "0";
                 String longitude = "0";
                 if(respostaJson.size() != 0){
+					System.out.println("==========================");
                     latitude = (String) ((JSONObject) respostaJson.get(0)).get("Lat");
+					System.out.println(latitude);
                     longitude = (String) ((JSONObject) respostaJson.get(0)).get("Lon");
+					System.out.println(longitude);
+					System.out.println("==========================");
                 }
                 map.put("latitude", latitude);
                 map.put("longitude", longitude);

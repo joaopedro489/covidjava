@@ -232,7 +232,9 @@ public class GUI extends JFrame {
 
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				radiusField.setText(Float.toString(Math.abs((float) radiusField.getValue())));
+				if(!radiusField.getText().isEmpty()){
+					radiusField.setText(Float.toString(Math.abs((float) radiusField.getValue())));
+				}
 				if (mortalidadeRadio.isSelected() || proximosRadio.isSelected()) {
 					tabs.setEnabledAt(0, false);
 					tabs.setEnabledAt(1, false);
@@ -341,7 +343,8 @@ public class GUI extends JFrame {
 			List<Medicao> mortalidade = RankingController.rankingMortalidade(fromDate, toDate);
 			tableModelMortalidade.setMeds(mortalidade);
 		} else {
-			// proximos
+			List<Medicao> proximos = PaisController.comparacaoRaio(fromDate, toDate, (float) radiusField.getValue());
+			tableModelProximos.setMeds(proximos);
 		}
 	}
 
