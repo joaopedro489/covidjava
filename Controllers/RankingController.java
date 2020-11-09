@@ -35,14 +35,8 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
-    public static void historicoPesquisa(String dataInicio, String dataFinal, String categoria, float raio){
-		File arquivoHistorico = new File("history/historico.ser");
-		ArrayList<HashMap<String, String>> historico;
-		if(arquivoHistorico.exists()){
-			historico = (ArrayList<HashMap<String, String>>) FileController.lerArquivoSer("history", "historico");
-		} else{
-			historico = new ArrayList<HashMap<String, String>>();
-		}
+    public static void salvarPesquisa(String dataInicio, String dataFinal, String categoria, float raio, String caminhoArquivo){
+		ArrayList<HashMap<String, String>> historico = new ArrayList<HashMap<String, String>>();
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("dataInicio", dataInicio);
 		map.put("dataFinal", dataFinal);
@@ -51,11 +45,14 @@ public class RankingController {
 			map.put("raio", Float.toString(raio));
 		}
 		historico.add(map);
-		FileController.escreverArquivoSer("history", "historico", historico);
+		FileController.escreverArquivoSer(caminhoArquivo, historico);
         return;
     }
+	public static ArrayList<HashMap<String, String>> pegarPesquisa(String caminhoArquivo){
+		return (ArrayList<HashMap<String,String>>)FileController.lerArquivoSer(caminhoArquivo);
+	}
     private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
-        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources", "samples");
+        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources/samples");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
         DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

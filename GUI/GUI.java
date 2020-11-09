@@ -251,7 +251,7 @@ public class GUI extends JFrame {
 						return;
 				}
 
-				FileController.escreverArquivoTsv("resources", "export", meds);
+				FileController.escreverArquivoTsv("resources/export", meds);
 				JOptionPane.showMessageDialog(GUI.this, "Dados exportados para resources/export.tsv");
 			}
 		});

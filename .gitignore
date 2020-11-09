@@ -1,7 +1,8 @@
 .DS_Store
 *.class
 json-simple-1.1.1.jar
-resources/*
+*.tsv
+*.ser
 *.args
 libraries/
 .idea/
