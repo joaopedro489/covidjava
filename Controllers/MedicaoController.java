@@ -1,20 +1,32 @@
 package Controllers;
 import Models.*;
-import java.util.*;
-
+import java.util.ArrayList;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
 import java.net.http.HttpClient.*;
 import java.time.LocalDateTime;
-
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
+/**
+ * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
+ *
+ *<h1>
+ *     Classe que representa a Controller das Medições para o projeto final.
+ *     Feito para pegar os dados da api da COVID.
+ *</h1>
+ */
 public class MedicaoController {
-    public static void getDadosApi(){
 
-        ArrayList<Pais> paises = (ArrayList<Pais>)FileController.lerArquivoSer("resources/countries");
+    /**
+     * Utiliza a api da COVID para pegar os dados mundiais
+     * da situação da COVID, adiciona a listas e salva em
+     * um arquivo .ser.
+     */
+    public static void getDadosApi() {
+
+        ArrayList<Pais> paises = (ArrayList<Pais>) FileController.lerArquivoSer("resources/countries");
         ArrayList<Medicao> medicoes = new ArrayList<Medicao>();
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
@@ -25,14 +37,13 @@ public class MedicaoController {
             HttpRequest request = HttpRequest.newBuilder()
                                     .uri(URI.create("https://api.covid19api.com/total/dayone/country/" + pais.getSlug()))
                                     .build();
-            try{
-                HttpResponse<String> response = null;
-                while(true){
+            try {
+                HttpResponse<String> response;
+                do {
                     response = cliente.send(request, HttpResponse.BodyHandlers.ofString());
-                    if(response.statusCode() == 200) break;
-                }
+                } while (response.statusCode() != 200);
 
-                try{
+                try {
                     JSONArray responseJson = (JSONArray) new JSONParser().parse(response.body());
                     for(Object dados : responseJson){
                         String data = String.valueOf(((JSONObject) dados).get("Date"));

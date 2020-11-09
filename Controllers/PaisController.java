@@ -1,7 +1,6 @@
 package Controllers;
 import Models.*;
 import java.util.*;
-import java.lang.Math.*;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
@@ -11,8 +10,20 @@ import java.time.format.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
+/**
+ * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
+ *
+ *<h1>
+ *     Classe que representa a Controller dos Países para o projeto final.
+ *     Feito para pegar os dados da api da COVID.
+ *</h1>
+ */
 public class PaisController {
-    public static void getPaisesApi(){
+
+    /**
+     * Utiliza a api da COVID para pegar os dados dos países.
+     */
+    public static void getPaisesApi() {
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
                                .followRedirects(Redirect.ALWAYS)
@@ -28,7 +39,6 @@ public class PaisController {
            try {
                JSONArray respostaJson = (JSONArray) new JSONParser().parse(resposta.body());
                ArrayList paises = new ArrayList();
-               ArrayList medicoes = new ArrayList();
                for (Object pais : respostaJson) {
                    String country = (String) ((JSONObject) pais).get("Country");
                    String slug = (String) ((JSONObject) pais).get("Slug");
@@ -58,8 +68,18 @@ public class PaisController {
            e.printStackTrace();
        }
     }
+
+    /**
+     * Recebe os parâmetros de busca e retorna uma lista organizada dos
+     * países mais próximos do país com maior taxa de crescimento de casos confirmados.
+     *
+     * @param dataInicio data inicial da busca.
+     * @param dataFinal data final da busca.
+     * @param raio raio do círculo da distância dos países.
+     * @return lista de medições ordenada por distância.
+     */
     public static List<Medicao> comparacaoRaio(String dataInicio,
-        String dataFinal, float raio){
+        String dataFinal, float raio) {
         ArrayList<HashMap<String, String>> listaDistancia = new ArrayList<HashMap<String, String>>();
 		DateTimeFormatter formatadorDeData = DateTimeFormatter.ISO_DATE_TIME;
 		List<Medicao> medicoes = new ArrayList<Medicao>();
@@ -85,14 +105,15 @@ public class PaisController {
             }
         }
         PaisController.ordenaDistancia(listaDistancia);
-		for (int i = 0; i < listaDistancia.size(); i++ ) {
-			Pais pais = new Pais(listaDistancia.get(i).get("nome"), "teste", listaDistancia.get(i).get("slug"), Float.parseFloat(listaDistancia.get(i).get("latitude")), Float.parseFloat(listaDistancia.get(i).get("longitude")));
-			Medicao medicao = new Medicao(pais,LocalDateTime.parse(listaDistancia.get(i).get("momento"),formatadorDeData),Float.parseFloat(listaDistancia.get(i).get("casos")),Medicao.StatusCaso.CONFIRMADOS);
-			medicoes.add(medicao);
-		}
+        for (HashMap<String, String> stringStringHashMap : listaDistancia) {
+            Pais pais = new Pais(stringStringHashMap.get("nome"), "teste", stringStringHashMap.get("slug"), Float.parseFloat(stringStringHashMap.get("latitude")), Float.parseFloat(stringStringHashMap.get("longitude")));
+            Medicao medicao = new Medicao(pais, LocalDateTime.parse(stringStringHashMap.get("momento"), formatadorDeData), Float.parseFloat(stringStringHashMap.get("casos")), Medicao.StatusCaso.CONFIRMADOS);
+            medicoes.add(medicao);
+        }
         return medicoes;
     }
-    private static ArrayList<HashMap<String, String>> getPaisLatLonApi(String slug){
+
+    private static ArrayList<HashMap<String, String>> getPaisLatLonApi(String slug) {
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
                                .followRedirects(Redirect.ALWAYS)
@@ -101,25 +122,24 @@ public class PaisController {
         HttpRequest requisicao = HttpRequest.newBuilder()
                                 .uri(URI.create("https://api.covid19api.com/live/country/" + slug))
                                 .build();
-        try{
+        try {
             HttpResponse<String> resposta;
 			System.out.println("==========================");
-            while(true){
+            do {
                 resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
-				System.out.println(resposta.statusCode());
-                if(resposta.statusCode() == 200) break;
-            }
+                System.out.println(resposta.statusCode());
+            } while (resposta.statusCode() != 200);
+
 			if(resposta.body().length() == 3){
 				requisicao = HttpRequest.newBuilder()
 										.uri(URI.create("https://api.covid19api.com/dayone/country/" + slug + "/status/confirmed"))
 										.build();
 
-				while(true){
-					resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
-					System.out.println(resposta.statusCode());
-					System.out.println(resposta.body());
-					if(resposta.statusCode() == 200) break;
-				}
+                do {
+                    resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
+                    System.out.println(resposta.statusCode());
+                    System.out.println(resposta.body());
+                } while (resposta.statusCode() != 200);
 			}
 			System.out.println("==========================");
 
@@ -164,16 +184,18 @@ public class PaisController {
             return null;
         }
     }
+
     private static void ordenaDistancia(List<HashMap<String, String>> listaDistancia){
-        Collections.sort(listaDistancia, new Comparator<HashMap<String, String>>(){
-        public int compare(HashMap<String, String> one, HashMap<String, String> two) {
-            Float primeiraDistancia = Float.parseFloat(one.get("distancia"));
-            Float segundaDistancia = Float.parseFloat(two.get("distancia"));
-            return primeiraDistancia.compareTo(segundaDistancia);
-        }
+        Collections.sort(listaDistancia, new Comparator<HashMap<String, String>>() {
+            public int compare(HashMap<String, String> one, HashMap<String, String> two) {
+                Float primeiraDistancia = Float.parseFloat(one.get("distancia"));
+                Float segundaDistancia = Float.parseFloat(two.get("distancia"));
+                return primeiraDistancia.compareTo(segundaDistancia);
+            }
         });
     }
-    private static float distancia(float lat1, float lon1, float lat2, float lon2){
+
+    private static float distancia(float lat1, float lon1, float lat2, float lon2) {
         float raioDaTerra = 6371;
 
         float dLat = (lat2-lat1)* (float)Math.PI/180;
@@ -186,11 +208,4 @@ public class PaisController {
             Math.sqrt(1-haversine));
         return raioDaTerra * (float) anguloCentral;
     }
-	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-		String dataInicio = scanner.nextLine();
-		String dataFinal = scanner.nextLine();
-		float raio = scanner.nextFloat();
-		PaisController.comparacaoRaio(dataInicio, dataFinal, raio);
-	}
 }

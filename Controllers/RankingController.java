@@ -5,8 +5,27 @@ import java.time.format.*;
 import java.time.*;
 import java.io.*;
 
+/**
+ * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
+ *
+ *<h1>
+ *     Classe que representa a Controller do Ranking para o projeto final.
+ *     Programa feito para calcular os rankings com os dados da COVID
+ *     e o histórico de busca.
+ *</h1>
+ */
 public class RankingController {
-    public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo){
+
+    /**
+     * Busca e ordena decrescentemente os dados de COVID
+     * dos países, em relação aos seus valores absolutos.
+     *
+     * @param dataInicio data inicial da busca.
+     * @param dataFinal data final da busca.
+     * @param tipo tipo de busca.
+     * @return o ranking ordenado pelos valores absolutos.
+     */
+    public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo) {
         List<Medicao> casos = new ArrayList<Medicao>();
         Estatistica caso = new Total("total", new ArrayList<Medicao>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
@@ -14,6 +33,16 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
+
+    /**
+     * Busca e ordena decrescentemente os dados de COVID
+     * dos países, em relação às suas taxas de crescimento.
+     *
+     * @param dataInicio data inicial da busca.
+     * @param dataFinal data final da busca.
+     * @param tipo tipo de busca.
+     * @return o ranking ordenado pela taxa de crescimento.
+     */
     public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo){
         List<Medicao> casos = new ArrayList<Medicao>();
         Estatistica caso = new TotalCrescimento("total crescimento", new ArrayList<Medicao>());
@@ -25,6 +54,15 @@ public class RankingController {
         }
         return casos;
     }
+
+    /**
+     * Busca e ordena decrescentemente os dados de COVID
+     * dos países, em relação às suas taxas de mortalidade.
+     *
+     * @param dataInicio data inicial da busca.
+     * @param dataFinal data final da busca.
+     * @return o ranking ordenado pela sua taxa de mortalidade.
+     */
     public static List<Medicao> rankingMortalidade(String dataInicio, String dataFinal){
         List<Medicao> casos = new ArrayList<Medicao>();
         Estatistica caso = new TotalMortalidade("total mortalidade", new ArrayList<Medicao>());
@@ -41,7 +79,7 @@ public class RankingController {
 		map.put("dataInicio", dataInicio);
 		map.put("dataFinal", dataFinal);
 		map.put("categoria", categoria);
-		if(categoria.equals("proximos")){
+		if(categoria.equals("próximos")){
 			map.put("raio", Float.toString(raio));
 		}
 		historico.add(map);
@@ -115,11 +153,12 @@ public class RankingController {
             }
         }
     }
-    private static void ordenaMedicao(List<Medicao> lista){
-        Collections.sort(lista, new Comparator<Medicao>(){
+
+    private static void ordenaMedicao(List<Medicao> lista) {
+        Collections.sort(lista, new Comparator<Medicao>() {
         public int compare(Medicao one, Medicao two) {
-            Float filterOne =  one.getCasos();
-            Float filterTwo =  two.getCasos();
+            Float filterOne = one.getCasos();
+            Float filterTwo = two.getCasos();
             return filterTwo.compareTo(filterOne);
             }
         });
