@@ -36,7 +36,9 @@ public abstract class Estatistica{
     }
     public float valor(int i){
         return this.observacoes.get(i+1).getCasos() -
-            this.observacoes.get(i).getCasos();
+            this.observacoes.get(i).getCasos() < 0 ? 0 :
+                this.observacoes.get(i+1).getCasos() -
+                this.observacoes.get(i).getCasos();
     }
     public String toString() {
         return this.nome + " " + this.observacoes.toString();

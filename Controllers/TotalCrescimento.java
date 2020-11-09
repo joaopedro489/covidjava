@@ -11,8 +11,10 @@ public class TotalCrescimento extends Estatistica {
 		if(this.getObservacoes().get(i).getCasos() == 0){
 			return this.getObservacoes().get(i+1).getCasos() * 100;
 		}
-        return ((this.getObservacoes().get(i+1).getCasos() -
-                this.getObservacoes().get(i).getCasos())
-            / this.getObservacoes().get(i).getCasos()) * 100;
+        float diferenca = this.getObservacoes().get(i+1).getCasos() -
+                this.getObservacoes().get(i).getCasos() < 0 ? 0 :
+                this.getObservacoes().get(i+1).getCasos() -
+                        this.getObservacoes().get(i).getCasos();
+        return (diferenca / this.getObservacoes().get(i).getCasos()) * 100;
     }
 }
