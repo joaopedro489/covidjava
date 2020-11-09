@@ -59,6 +59,11 @@ public class GUI extends JFrame {
 			fireTableDataChanged();
 		}
 
+		public void setHeader(String[] header) {
+			this.header = header;
+			fireTableStructureChanged();
+		}
+
 		@Override
 		public int getColumnCount() {
 			return 3;
@@ -396,10 +401,16 @@ public class GUI extends JFrame {
 				confirmados = RankingController.rankingGeral(fromDate, toDate, "confirmados");
 				mortos = RankingController.rankingGeral(fromDate, toDate, "mortos");
 				recuperados = RankingController.rankingGeral(fromDate, toDate, "recuperados");
+				tableModelConfirmados.setHeader(header1);
+				tableModelMortos.setHeader(header1);
+				tableModelRecuperados.setHeader(header1);
 			} else {
 				confirmados = RankingController.rankingCrescimento(fromDate, toDate, "confirmados");
 				mortos = RankingController.rankingCrescimento(fromDate, toDate, "mortos");
 				recuperados = RankingController.rankingCrescimento(fromDate, toDate, "recuperados");
+				tableModelConfirmados.setHeader(header2);
+				tableModelMortos.setHeader(header2);
+				tableModelRecuperados.setHeader(header2);
 			}
 
 			tableModelConfirmados.setMeds(confirmados);
