@@ -34,12 +34,24 @@ public class RankingController {
         RankingController.ordenaMedicao(casos);
         return casos;
     }
-    public static void historicoPesquisa(){
-        
+    public static void historicoPesquisa(String dataInicio, String dataFinal, String categoria){
+		File arquivoHistorico = new File("history/historico.ser");
+		ArrayList<HashMap<String, String>> historico;
+		if(arquivoHistorico.exists()){
+			historico = (ArrayList<HashMap<String, String>>) FileController.lerArquivoSer("history", "historico");
+		} else{
+			historico = new ArrayList<HashMap<String, String>>();
+		}
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("dataInicio", dataInicio);
+		map.put("dataFinal", dataFinal);
+		map.put("categoria", categoria);
+		historico.add(map);
+		FileController.escreverArquivoSer("history", "historico", historico);
         return;
     }
-    private static Estatistica getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
-        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivo("samples");
+    private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
+        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources", "samples");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
         DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -62,9 +74,8 @@ public class RankingController {
                 }
             }
         }
-        return caso;
     }
-    private static List<Medicao> calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
+    private static void calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
         for(int i = 0; i < caso.getObservacoes().size() - 1 ; i++){
             if(caso.getObservacoes().get(i).getPais().getSlug().equals(
                 caso.getObservacoes().get(i+1).getPais().getSlug())){
@@ -102,7 +113,6 @@ public class RankingController {
                 casos.add(caso.getObservacoes().get(i));
             }
         }
-        return casos;
     }
     private static void ordenaMedicao(List<Medicao> lista){
         Collections.sort(lista, new Comparator<Medicao>(){
