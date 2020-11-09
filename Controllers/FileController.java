@@ -1,15 +1,28 @@
 package Controllers;
 import Models.*;
-import java.util.*;
 import java.io.*;
-import java.nio.file.*;
-import java.lang.*;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
+ *
+ *<h1>
+ *     Classe que representa a Controller do Arquivo para o projeto final.
+ *     Feito para ler e escrever arquivos com os dados da COVID.
+ *</h1>
+ */
 public class FileController {
-    public static void escreverArquivoTsv(String nomeArquivo, List<Medicao> pesquisa, boolean append){
+
+    /**
+     * Exporta os dados pesquisados para um arquivo .tsv.
+     * @param nomeArquivo nome do arquivo.
+     * @param pesquisa dados retornados pela busca.
+     */
+    public static void escreverArquivoTsv(String nomeArquivo, List<Medicao> pesquisa) {
 
         File filePesquisa = new File("resources/" + nomeArquivo + ".tsv");
-        FileOutputStream output = null;
+        FileOutputStream output;
 
         try {
             output = new FileOutputStream(filePesquisa);
@@ -19,27 +32,29 @@ public class FileController {
             return;
         }
         try {
-            for(int i = 0; i<pesquisa.size(); i++){
-                output.write(pesquisa.get(i).toString().getBytes());
+            for (Medicao medicao : pesquisa) {
+                output.write(medicao.toString().getBytes());
             }
             output.close();
         }
         catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo!");
-            return;
         }
     }
-    public static void escreverArquivoSer(String nomeArquivo, List objects){
-        OutputStream file = null;
-        ObjectOutputStream output = null;
+
+    /**
+     * Exporta os dados da API para um arquivo .ser,
+     * para servir como banco de dados.
+     * @param nomeArquivo nome do arquivo.
+     * @param objects dados a serem salvos no arquivo.
+     */
+    public static void escreverArquivoSer(String nomeArquivo, List objects) {
+        OutputStream file;
+        ObjectOutputStream output;
         try {
             file = new FileOutputStream("resources/"+ nomeArquivo + ".ser");
             output = new ObjectOutputStream(file);
-        } catch(FileNotFoundException e) {
-            System.out.println("Erro ao abrir o arquivo!");
-            System.exit(1);
-            return;
-        } catch(IOException e){
+        } catch(IOException e) {
             System.out.println("Erro ao abrir o arquivo!");
             System.exit(1);
             return;
@@ -50,27 +65,33 @@ public class FileController {
         } catch (IOException e) {
             System.out.println("Erro ao escrever no arquivo!");
             System.exit(1);
-            return;
         }
     }
-    public static ArrayList lerArquivo(String nomeArquivo){
-        InputStream file = null;
-        ObjectInputStream input = null;
+
+    /**
+     * Lê os dados do arquivo e caso funcione, retorna esses dados.
+     * @param nomeArquivo nome do arquivo.
+     * @return se funcionar, retorna um ArrayList com o dados do arquivo.
+     * Caso não funcione, retorna null.
+     */
+    public static ArrayList lerArquivo(String nomeArquivo) {
+        InputStream file;
+        ObjectInputStream input;
         try{
             file = new FileInputStream("resources/" + nomeArquivo + ".ser");
             input = new ObjectInputStream(file);
-        } catch(FileNotFoundException e){
+        } catch(FileNotFoundException e) {
             System.out.println("Erro ao abrir o arquivo!");
             System.exit(1);
             return null;
-        } catch(IOException e){
+        } catch(IOException e) {
             System.out.println("Erro ao o arquivo!");
             System.exit(1);
             return null;
         }
-        try{
+        try {
             return (ArrayList) input.readObject();
-        } catch(IOException e){
+        } catch(IOException e) {
             System.out.println("Erro ao ler o arquivo");
             System.exit(1);
             return null;
