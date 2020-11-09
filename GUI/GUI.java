@@ -38,11 +38,16 @@ public class GUI extends JFrame {
 	private DataTableModel tableModelConfirmados, tableModelRecuperados, tableModelMortos,
 			tableModelMortalidade, tableModelProximos;
 
+	private static final String[] header1 = {"Posição", "País", "Casos"};
+	private static final String[] header2 = {"Posição", "País", "Taxa (%)"};
+
 	private class DataTableModel extends AbstractTableModel {
 		private List<Medicao> meds;
+		private String[] header;
 
-		public DataTableModel() {
+		public DataTableModel(String[] header) {
 			meds = new ArrayList();
+			this.header = header;
 		}
 
 		public List<Medicao> getMeds() {
@@ -66,15 +71,7 @@ public class GUI extends JFrame {
 
 		@Override
 		public String getColumnName(int col) {
-			switch (col) {
-				case 0:
-					return "Posição";
-				case 1:
-					return "País";
-				case 2:
-					return "Casos";
-			}
-			return null;
+			return header[col];
 		}
 
 		@Override
@@ -137,11 +134,11 @@ public class GUI extends JFrame {
 		radiusField = new JFormattedTextField(numberFormatter);
 
 		// DataTableModel
-		tableModelConfirmados = new DataTableModel();
-		tableModelRecuperados = new DataTableModel();
-		tableModelMortos = new DataTableModel();
-		tableModelMortalidade = new DataTableModel();
-		tableModelProximos = new DataTableModel();
+		tableModelConfirmados = new DataTableModel(header1);
+		tableModelRecuperados = new DataTableModel(header1);
+		tableModelMortos = new DataTableModel(header1);
+		tableModelMortalidade = new DataTableModel(header2);
+		tableModelProximos = new DataTableModel(header2);
 
 		// JTable
 		tableConfirmados = new JTable(tableModelConfirmados);
