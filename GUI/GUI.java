@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javax.swing.text.NumberFormatter;
 import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import java.math.RoundingMode;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
@@ -120,10 +122,10 @@ public class GUI extends JFrame {
 		fromDateField = new JFormattedTextField(new DateFormatter(dateFormat));
 		toDateField = new JFormattedTextField(new DateFormatter(dateFormat));
 
-		NumberFormat numberFormat = NumberFormat.getInstance();
+		NumberFormat numberFormat = DecimalFormat.getInstance();
+		numberFormat.setGroupingUsed(false);
 		NumberFormatter numberFormatter = new NumberFormatter(numberFormat);
-		numberFormatter.setValueClass(Integer.class);
-		numberFormatter.setMinimum(0);
+		numberFormatter.setValueClass(Float.class);
 		radiusField = new JFormattedTextField(numberFormatter);
 
 		// DataTableModel
@@ -230,6 +232,7 @@ public class GUI extends JFrame {
 
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				radiusField.setText(Float.toString(Math.abs((float) radiusField.getValue())));
 				if (mortalidadeRadio.isSelected() || proximosRadio.isSelected()) {
 					tabs.setEnabledAt(0, false);
 					tabs.setEnabledAt(1, false);
@@ -284,12 +287,26 @@ public class GUI extends JFrame {
 			loading.setOptionType(JOptionPane.DEFAULT_OPTION);
 			loading.setOptions(new Object[] {});
 			JDialog dialog = loading.createDialog(this, "Atualizando...");
+
+			SwingWorker worker = new SwingWorker() {
+				@Override
+				public String doInBackground() throws Exception {
+					System.out.println("Atualizando países...");
+					PaisController.getPaisesApi();
+					System.out.println("Atualizando dados...");
+					MedicaoController.getDadosApi();
+					System.out.println("Atualizado com sucesso.");
+					return null;
+				}
+
+				@Override
+				public void done() {
+					dialog.dispose();
+				}
+			};
+
+			worker.execute();
 			dialog.setVisible(true);
-
-			PaisController.getPaisesApi();
-			MedicaoController.getDadosApi();
-
-			dialog.dispose();
 		}
 	}
 
@@ -329,6 +346,7 @@ public class GUI extends JFrame {
 	}
 
 	public GUI() {
+		super("covidJava");
 		initElements();
 		configElements();
 		configListeners();
