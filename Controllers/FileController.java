@@ -6,9 +6,9 @@ import java.nio.file.*;
 import java.lang.*;
 
 public class FileController {
-    public static void escreverArquivoTsv(String pasta, String nomeArquivo, List pesquisa){
+    public static void escreverArquivoTsv(String caminhoArquivo, List pesquisa){
 
-        File filePesquisa = new File(pasta + "/" + nomeArquivo + ".tsv");
+        File filePesquisa = new File(caminhoArquivo + ".tsv");
         FileOutputStream output = null;
 
         try {
@@ -29,11 +29,11 @@ public class FileController {
             return;
         }
     }
-    public static void escreverArquivoSer(String pasta, String nomeArquivo, List objects){
+    public static void escreverArquivoSer(String caminhoArquivo, List objects){
         OutputStream file = null;
         ObjectOutputStream output = null;
         try {
-            file = new FileOutputStream(pasta + "/"+ nomeArquivo + ".ser");
+            file = new FileOutputStream(caminhoArquivo + ".ser");
             output = new ObjectOutputStream(file);
         } catch(FileNotFoundException e) {
             System.out.println("Erro ao abrir o arquivo!");
@@ -53,11 +53,11 @@ public class FileController {
             return;
         }
     }
-    public static ArrayList lerArquivoSer(String pasta, String nomeArquivo){
+    public static ArrayList lerArquivoSer(String caminhoArquivo){
         InputStream file = null;
         ObjectInputStream input = null;
         try{
-            file = new FileInputStream(pasta + "/" + nomeArquivo + ".ser");
+            file = new FileInputStream(caminhoArquivo + ".ser");
             input = new ObjectInputStream(file);
         } catch(FileNotFoundException e){
             System.out.println("Erro ao abrir o arquivo!");

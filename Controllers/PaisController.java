@@ -42,7 +42,7 @@ public class PaisController {
                         Float.parseFloat(dados.get(0).get("latitude")), Float.parseFloat(dados.get(0).get("longitude")));
                    paises.add(paisArquivo);
                }
-               FileController.escreverArquivoSer("resources", "countries", paises);
+               FileController.escreverArquivoSer("resources/countries", paises);
            }
            catch (ParseException e) {
                System.err.println("Resposta inválida");
