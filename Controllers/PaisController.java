@@ -80,9 +80,9 @@ public class PaisController {
      */
     public static List<Medicao> comparacaoRaio(String dataInicio,
         String dataFinal, float raio) {
-        ArrayList<HashMap<String, String>> listaDistancia = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, String>> listaDistancia = new ArrayList<>();
 		DateTimeFormatter formatadorDeData = DateTimeFormatter.ISO_DATE_TIME;
-		List<Medicao> medicoes = new ArrayList<Medicao>();
+		List<Medicao> medicoes = new ArrayList<>();
         ArrayList<Medicao> casos = (ArrayList<Medicao>)	RankingController.rankingCrescimento(dataInicio,
             dataFinal, "confirmados");
         Medicao maior = casos.get(0);
@@ -93,7 +93,7 @@ public class PaisController {
                 pais.getPais().getLongitude());
             if(raio >= Math.abs(distancia) && !(pais.getPais().getSlug().equals(
                 maior.getPais().getSlug()))){
-                HashMap<String, String> map = new HashMap<String,String>();
+                HashMap<String, String> map = new HashMap<>();
                 map.put("nome", pais.getPais().getNome());
                 map.put("slug", pais.getPais().getSlug());
 				map.put("latitude", Float.toString(pais.getPais().getLatitude()));
@@ -145,8 +145,8 @@ public class PaisController {
 
             try{
                 JSONArray respostaJson = (JSONArray) new JSONParser().parse(resposta.body());
-                ArrayList<HashMap<String, String>> pais = new ArrayList<HashMap<String, String>>();
-                HashMap<String, String> map = new HashMap<String, String>();
+                ArrayList<HashMap<String, String>> pais = new ArrayList<>();
+                HashMap<String, String> map = new HashMap<>();
                 String latitude = "0";
                 String longitude = "0";
                 if(respostaJson.size() != 0){
@@ -186,7 +186,7 @@ public class PaisController {
     }
 
     private static void ordenaDistancia(List<HashMap<String, String>> listaDistancia){
-        Collections.sort(listaDistancia, new Comparator<HashMap<String, String>>() {
+        Collections.sort(listaDistancia, new Comparator<>() {
             public int compare(HashMap<String, String> one, HashMap<String, String> two) {
                 Float primeiraDistancia = Float.parseFloat(one.get("distancia"));
                 Float segundaDistancia = Float.parseFloat(two.get("distancia"));

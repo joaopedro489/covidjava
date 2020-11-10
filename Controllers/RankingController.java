@@ -3,7 +3,6 @@ import Models.*;
 import java.util.*;
 import java.time.format.*;
 import java.time.*;
-import java.io.*;
 
 /**
  * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
@@ -26,8 +25,8 @@ public class RankingController {
      * @return o ranking ordenado pelos valores absolutos.
      */
     public static List<Medicao> rankingGeral(String dataInicio, String dataFinal, String tipo) {
-        List<Medicao> casos = new ArrayList<Medicao>();
-        Estatistica caso = new Total("total", new ArrayList<Medicao>());
+        List<Medicao> casos = new ArrayList<>();
+        Estatistica caso = new Total("total", new ArrayList<>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
@@ -43,15 +42,12 @@ public class RankingController {
      * @param tipo tipo de busca.
      * @return o ranking ordenado pela taxa de crescimento.
      */
-    public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo){
-        List<Medicao> casos = new ArrayList<Medicao>();
-        Estatistica caso = new TotalCrescimento("total crescimento", new ArrayList<Medicao>());
+    public static List<Medicao> rankingCrescimento(String dataInicio, String dataFinal, String tipo) {
+        List<Medicao> casos = new ArrayList<>();
+        Estatistica caso = new TotalCrescimento("total crescimento", new ArrayList<>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, tipo);
         RankingController.calculaCasos(caso,casos, null);
         RankingController.ordenaMedicao(casos);
-        for(int i = 0; i < casos.size(); i++){
-            System.out.println(casos.get(i));
-        }
         return casos;
     }
 
@@ -64,18 +60,28 @@ public class RankingController {
      * @return o ranking ordenado pela sua taxa de mortalidade.
      */
     public static List<Medicao> rankingMortalidade(String dataInicio, String dataFinal){
-        List<Medicao> casos = new ArrayList<Medicao>();
-        Estatistica caso = new TotalMortalidade("total mortalidade", new ArrayList<Medicao>());
-        Total casoTotal = new Total("total", new ArrayList<Medicao>());
+        List<Medicao> casos = new ArrayList<>();
+        Estatistica caso = new TotalMortalidade("total mortalidade", new ArrayList<>());
+        Total casoTotal = new Total("total", new ArrayList<>());
         RankingController.getEstatisticas(caso, dataInicio, dataFinal, "mortos");
         RankingController.getEstatisticas(casoTotal, dataInicio, dataFinal, "confirmados");
         RankingController.calculaCasos(caso,casos, casoTotal);
         RankingController.ordenaMedicao(casos);
         return casos;
     }
+
+    /**
+     * Salva a pesquisa feita em um arquivo .ser.
+     *
+     * @param dataInicio data inicial da busca.
+     * @param dataFinal data final da busca.
+     * @param categoria categoria da busca.
+     * @param raio distância máxima do país com maior número de casos confirmados.
+     * @param caminhoArquivo caminho (path) do arquivo.
+     */
     public static void salvarPesquisa(String dataInicio, String dataFinal, String categoria, float raio, String caminhoArquivo){
-		ArrayList<HashMap<String, String>> historico = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> map = new HashMap<String, String>();
+		ArrayList<HashMap<String, String>> historico = new ArrayList<>();
+		HashMap<String, String> map = new HashMap<>();
 		map.put("dataInicio", dataInicio);
 		map.put("dataFinal", dataFinal);
 		map.put("categoria", categoria);
@@ -84,12 +90,19 @@ public class RankingController {
 		}
 		historico.add(map);
 		FileController.escreverArquivoSer(caminhoArquivo, historico);
-        return;
     }
+
+    /**
+     * Retorna um ArrayList com a última pesquisa salva.
+     *
+     * @param caminhoArquivo caminho (path) do arquivo.
+     * @return ArrayList com a última pesquisa.
+     */
 	public static ArrayList<HashMap<String, String>> pegarPesquisa(String caminhoArquivo){
-		return (ArrayList<HashMap<String,String>>)FileController.lerArquivoSer(caminhoArquivo);
+		return (ArrayList<HashMap<String,String>>) FileController.lerArquivoSer(caminhoArquivo);
 	}
-    private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo){
+
+    private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo) {
         ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources/samples");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
@@ -114,10 +127,11 @@ public class RankingController {
             }
         }
     }
-    private static void calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal){
+
+    private static void calculaCasos(Estatistica caso, List<Medicao> casos, Estatistica casoTotal) {
         for(int i = 0; i < caso.getObservacoes().size() - 1 ; i++){
             if(caso.getObservacoes().get(i).getPais().getSlug().equals(
-                caso.getObservacoes().get(i+1).getPais().getSlug())){
+                caso.getObservacoes().get(i+1).getPais().getSlug())) {
                     float valor;
                     if(casoTotal != null){
                         float valorTotal = casoTotal.getObservacoes().get(i).getCasos();
@@ -155,7 +169,7 @@ public class RankingController {
     }
 
     private static void ordenaMedicao(List<Medicao> lista) {
-        Collections.sort(lista, new Comparator<Medicao>() {
+        Collections.sort(lista, new Comparator<>() {
         public int compare(Medicao one, Medicao two) {
             Float filterOne = one.getCasos();
             Float filterTwo = two.getCasos();

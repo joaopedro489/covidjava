@@ -18,12 +18,19 @@ import java.util.HashMap;
 import java.io.File;
 
 import Models.Medicao;
-import Models.Pais;
 import Controllers.RankingController;
 import Controllers.PaisController;
 import Controllers.MedicaoController;
 import Controllers.FileController;
 
+/**
+ * @author Filipe Souza, Gabriel Ottoboni, João Pedro Silva
+ *
+ *<h1>
+ *     Classe que representa a interface gráfica do programa
+ *     para o projeto final.
+ *</h1>
+ */
 public class GUI extends JFrame {
 	private JPanel buttonBar, dateBar, radioBar;
 	private JButton updateButton, storeButton, restoreButton, exportButton, searchButton;
@@ -41,12 +48,23 @@ public class GUI extends JFrame {
 	private static final String[] header1 = {"Posição", "País", "Casos"};
 	private static final String[] header2 = {"Posição", "País", "Taxa (%)"};
 
+	/**
+	 * Construtor da Classe GUI.
+	 */
+	public GUI() {
+		super("covidJava");
+		initElements();
+		configElements();
+		configListeners();
+		setInitialState();
+	}
+
 	private class DataTableModel extends AbstractTableModel {
 		private List<Medicao> meds;
 		private String[] header;
 
 		public DataTableModel(String[] header) {
-			meds = new ArrayList();
+			meds = new ArrayList<>();
 			this.header = header;
 		}
 
@@ -267,15 +285,14 @@ public class GUI extends JFrame {
 					toDateField.setText(search.get("dataFinal"));
 
 					String category = search.get("categoria");
-					if (category.equals("próximos")) {
-						radiusField.setText(search.get("raio"));
-						proximosRadio.setSelected(true);
-					} else if (category.equals("absoluto")) {
-						absoluteRadio.setSelected(true);
-					} else if (category.equals("crescimento")) {
-						growthRadio.setSelected(true);
-					} else if (category.equals("mortalidade")) {
-						mortalidadeRadio.setSelected(true);
+					switch (category) {
+						case "próximos" -> {
+							radiusField.setText(search.get("raio"));
+							proximosRadio.setSelected(true);
+						}
+						case "absoluto" -> absoluteRadio.setSelected(true);
+						case "crescimento" -> growthRadio.setSelected(true);
+						case "mortalidade" -> mortalidadeRadio.setSelected(true);
 					}
 
 					search();
@@ -384,7 +401,6 @@ public class GUI extends JFrame {
 	}
 
 	private void search() {
-		int tabIndex = tabs.getSelectedIndex();
 		String fromDate = fromDateField.getText();
 		String toDate = toDateField.getText();
 
@@ -456,20 +472,9 @@ public class GUI extends JFrame {
 				JOptionPane.showMessageDialog(this, "Esse arquivo não existe");
 				return null;
 			}
-			return file.getPath().substring(0, file.getPath().length() - 4);
+			return file.getPath();
 		}
 		return null;
 	}
 
-	public GUI() {
-		super("covidJava");
-		initElements();
-		configElements();
-		configListeners();
-		setInitialState();
-	}
-
-	public static void main(String[] args) {
-		new GUI();
-	}
 }

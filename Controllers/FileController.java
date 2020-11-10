@@ -16,7 +16,7 @@ public class FileController {
 
     /**
      * Exporta os dados pesquisados para um arquivo .tsv.
-     * @param nomeArquivo nome do arquivo.
+     * @param caminhoArquivo caminho até o arquivo.
      * @param pesquisa dados retornados pela busca.
      */
     public static void escreverArquivoTsv(String caminhoArquivo, List<Medicao> pesquisa) {
@@ -45,7 +45,7 @@ public class FileController {
     /**
      * Exporta os dados da API para um arquivo .ser,
      * para servir como banco de dados.
-     * @param nomeArquivo nome do arquivo.
+     * @param caminhoArquivo caminho até o arquivo.
      * @param objects dados a serem salvos no arquivo.
      */
     public static void escreverArquivoSer(String caminhoArquivo, List objects) {
@@ -70,15 +70,15 @@ public class FileController {
 
     /**
      * Lê os dados do arquivo e caso funcione, retorna esses dados.
-     * @param nomeArquivo nome do arquivo.
+     * @param caminhoArquivo caminho até o arquivo.
      * @return se funcionar, retorna um ArrayList com o dados do arquivo.
      * Caso não funcione, retorna null.
      */
     public static ArrayList lerArquivoSer(String caminhoArquivo) {
         InputStream file;
         ObjectInputStream input;
-        try{
-            file = new FileInputStream(caminhoArquivo + ".ser");
+        try {
+            file = new FileInputStream(caminhoArquivo);
             input = new ObjectInputStream(file);
         } catch(FileNotFoundException e) {
             System.out.println("Erro ao abrir o arquivo!");

@@ -27,7 +27,7 @@ public class MedicaoController {
     public static void getDadosApi() {
 
         ArrayList<Pais> paises = (ArrayList<Pais>) FileController.lerArquivoSer("resources/countries");
-        ArrayList<Medicao> medicoes = new ArrayList<Medicao>();
+        ArrayList<Medicao> medicoes = new ArrayList<>();
         HttpClient cliente = HttpClient.newBuilder()
                                .version(Version.HTTP_2)
                                .followRedirects(Redirect.ALWAYS)
