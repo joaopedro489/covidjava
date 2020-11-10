@@ -476,5 +476,8 @@ public class GUI extends JFrame {
 		}
 		return null;
 	}
+	public static void main(String[] args) {
+		new GUI();
+	}
 
 }

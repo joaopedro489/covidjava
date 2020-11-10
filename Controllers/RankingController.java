@@ -103,7 +103,8 @@ public class RankingController {
 	}
 
     private static void getEstatisticas(Estatistica caso, String dataInicio, String dataFinal, String tipo) {
-        ArrayList<Medicao> dados = (ArrayList<Medicao>) FileController.lerArquivoSer("resources/samples");
+        ArrayList<Medicao> dados = (ArrayList<Medicao>)
+		 FileController.lerArquivoSer("resources/samples.ser");
         dataInicio =  dataInicio + " 00:00";
         dataFinal =  dataFinal + " 00:00";
         DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
