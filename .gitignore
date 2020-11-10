@@ -1,3 +1,10 @@
 .DS_Store
 *.class
 json-simple-1.1.1.jar
+*.ser
+*.tsv
+*.args
+libraries/
+.idea/
+covidjava.iml
+out/
